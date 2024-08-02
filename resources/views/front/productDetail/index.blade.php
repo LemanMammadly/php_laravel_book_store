@@ -61,8 +61,8 @@
                             <p class="tag-block">
                                 Tags:
                                 @foreach ($product->tags as $tag)
-                                <a href="#">{{$tag->name}}</a>{{ $loop->last ? '' : ',' }}
-                            @endforeach
+                                    <a href="#">{{ $tag->name }}</a>{{ $loop->last ? '' : ',' }}
+                                @endforeach
                             </p>
                             <h3 class="product-title">
                                 {{ $product->title }}
@@ -87,23 +87,28 @@
                                     {{ $product->price - ($product->price * $product->discountPercent) / 100 }} </span>
                                 <del class="price-old">£ {{ $product->price }}</del>
                             </div>
+                            @php
+                                $averageRating = $product->reviews()->average('rating');
+                            @endphp
                             <div class="rating-widget">
                                 <div class="rating-block">
-                                    <span class="fas fa-star star_on"></span>
-                                    <span class="fas fa-star star_on"></span>
-                                    <span class="fas fa-star star_on"></span>
-                                    <span class="fas fa-star star_on"></span>
-                                    <span class="fas fa-star "></span>
+                                    @for ($i = 1; $i <= $averageRating; $i++)
+                                        <span class="ion-android-star-outline star_on"></span>
+                                    @endfor
+
+                                    @for ($i = $averageRating + 1; $i <= 5; $i++)
+                                        <span class="ion-android-star-outline"></span>
+                                    @endfor
                                 </div>
                                 <div class="review-widget">
-                                    <a href="">(1 Reviews)</a> <span>|</span>
+                                    <a href="">({{ $product->reviews()->count() }} Reviews)</a> <span>|</span>
                                     <a href="">Write a review</a>
                                 </div>
                             </div>
                             <article class="product-details-article">
                                 <h4 class="sr-only">Product Summery</h4>
                                 <p>
-                                    {{$product->text}}
+                                    {{ $product->text }}
                                 </p>
                             </article>
                             <div class="add-to-cart-row">
@@ -133,7 +138,7 @@
                         <li class="nav-item">
                             <a class="nav-link" id="tab2" data-toggle="tab" href="#tab-2" role="tab"
                                 aria-controls="tab-2" aria-selected="true">
-                                REVIEWS (1)
+                                REVIEWS ({{ $product->reviews->count() }})
                             </a>
                         </li>
                     </ul>
@@ -142,81 +147,83 @@
                             <article class="review-article">
                                 <h1 class="sr-only">Tab Article</h1>
                                 <p>
-                                    {{$product->description}}
+                                    {{ $product->description }}
                                 </p>
                             </article>
                         </div>
                         <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab2">
                             <div class="review-wrapper">
                                 <h2 class="title-lg mb--20">
-                                    1 REVIEW FOR AUCTOR GRAVIDA ENIM
+                                    {{ $product->reviews->count() }} REVIEW FOR AUCTOR GRAVIDA ENIM
                                 </h2>
-                                <div class="review-comment mb--20">
-                                    <div class="avatar">
-                                        <img src="assets/image/icon/author-logo.png" alt="" />
-                                    </div>
-                                    <div class="text">
-                                        <div class="rating-block mb--15">
-                                            <span class="ion-android-star-outline star_on"></span>
-                                            <span class="ion-android-star-outline star_on"></span>
-                                            <span class="ion-android-star-outline star_on"></span>
-                                            <span class="ion-android-star-outline"></span>
-                                            <span class="ion-android-star-outline"></span>
+                                @foreach ($product->reviews as $review)
+                                    <div class="review-comment mb--20">
+                                        <div class="avatar">
+                                            <img src="assets/image/icon/author-logo.png" alt="" />
                                         </div>
-                                        <h6 class="author">
-                                            ADMIN –
-                                            <span class="font-weight-400">March 23, 2015</span>
-                                        </h6>
-                                        <p>
-                                            Lorem et placerat vestibulum, metus nisi posuere nisl,
-                                            in accumsan elit odio quis mi.
-                                        </p>
+                                        <div class="text">
+                                            <div class="rating-block mb--15">
+                                                <div class="rating">
+                                                    @for ($i = 1; $i <= $review->rating; $i++)
+                                                        <span class="ion-android-star-outline star_on"></span>
+                                                    @endfor
+
+                                                    @for ($i = $review->rating + 1; $i <= 5; $i++)
+                                                        <span class="ion-android-star-outline"></span>
+                                                    @endfor
+                                                </div>
+                                            </div>
+                                            <h6 class="author">
+                                                {{ $review->user->name }} –
+                                                <span
+                                                    class="font-weight-400">{{ $review->created_at->translatedFormat('d F, Y') }}</span>
+                                            </h6>
+                                            <p>
+                                                {{ $review->text }}
+                                            </p>
+                                            <form action="{{ route('delete', ['id' => $review->id]) }}" method="POST"
+                                                style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                @if ($userId==$review->user_id)
+                                                <button type="submit">🗑️</button>
+                                                @else
+                                                @endif
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
+                                @endforeach
                                 <h2 class="title-lg mb--20 pt--15">ADD A REVIEW</h2>
                                 <div class="rating-row pt-2">
-                                    <p class="d-block">Your Rating</p>
-                                    <span class="rating-widget-block">
-                                        <input type="radio" name="star" id="star1" />
-                                        <label for="star1"></label>
-                                        <input type="radio" name="star" id="star2" />
-                                        <label for="star2"></label>
-                                        <input type="radio" name="star" id="star3" />
-                                        <label for="star3"></label>
-                                        <input type="radio" name="star" id="star4" />
-                                        <label for="star4"></label>
-                                        <input type="radio" name="star" id="star5" />
-                                        <label for="star5"></label>
-                                    </span>
-                                    <form action="./" class="mt--15 site-form">
+
+                                    <form action="{{ route('comment') }}" method="POST" class="mt--15 site-form">
+                                        @csrf
+                                        <div class="d-flex">
+                                            <p class="d-block mx-3">Your Rating</p>
+                                            <span class="rating-widget-block d-flex gap-2">
+                                                <input type="radio" name="rating" id="star5" value="5" />
+                                                <label for="star5"></label>
+                                                <input type="radio" name="rating" id="star4" value="4" />
+                                                <label for="star4"></label>
+                                                <input type="radio" name="rating" id="star3" value="3" />
+                                                <label for="star3"></label>
+                                                <input type="radio" name="rating" id="star2" value="2" />
+                                                <label for="star2"></label>
+                                                <input type="radio" name="rating" id="star1" value="1" />
+                                                <label for="star1"></label>
+                                            </span>
+                                        </div>
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="form-group">
                                                     <label for="message">Comment</label>
-                                                    <textarea name="message" id="message" cols="30" rows="10" class="form-control"></textarea>
+                                                    <textarea name="text" id="message" cols="30" rows="10" class="form-control"></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-4">
-                                                <div class="form-group">
-                                                    <label for="name">Name *</label>
-                                                    <input type="text" id="name" class="form-control" />
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="form-group">
-                                                    <label for="email">Email *</label>
-                                                    <input type="text" id="email" class="form-control" />
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="form-group">
-                                                    <label for="website">Website</label>
-                                                    <input type="text" id="website" class="form-control" />
-                                                </div>
-                                            </div>
+                                            <input type="hidden" value="{{ $product->id }}" name="product_id">
                                             <div class="col-lg-4">
                                                 <div class="submit-btn">
-                                                    <a href="#" class="btn btn-black">Post Comment</a>
+                                                    <button type="submit" class="btn btn-black">Post Comment</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -228,10 +235,10 @@
                 </div>
                 <!-- <div class="tab-product-details">
 
-                        </div>
-                        <!--=================================
-                        RELATED PRODUCTS BOOKS
-                    ===================================== -->
+                                                        </div>
+                                                        <!--=================================
+                                                        RELATED PRODUCTS BOOKS
+                                                    ===================================== -->
                 <section class="">
                     <div class="container">
                         <div class="section-title section-title--bordered">
@@ -596,8 +603,8 @@
         </main>
     </div>
     <!--=================================
-                      Brands Slider
-                    ===================================== -->
+                                                      Brands Slider
+                                                    ===================================== -->
     <section class="section-margin">
         <h2 class="sr-only">Brand Slider</h2>
         <div class="container">

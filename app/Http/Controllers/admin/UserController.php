@@ -12,12 +12,22 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
+        $userId = null;
+        $auth_user = null;
+        if (Auth::check() && Auth::user()) {
+            $userId = Auth::user()->id;
+            $auth_user = Auth::user();
+        }
         $isTrue = 0;
         if (Auth::check() && Auth::user()->isSuperAdmin) {
             $isTrue = 1;
         }
-        return view('admin.home.index', compact('users', 'isTrue'));
+
+        $admin_id = null;
+
+        $users = User::where('id', '!=', $userId)->get();
+
+        return view('admin.home.index', compact('users', 'isTrue', 'auth_user'));
     }
 
     public function updateView($slug)
@@ -34,7 +44,8 @@ class UserController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255',
             'isAdmin' => 'sometimes|boolean',
-            'isActive' => 'sometimes|boolean'
+            'isActive' => 'sometimes|boolean',
+            'slug' => 'string'
         ]);
 
         if ($validator->fails()) {
@@ -49,6 +60,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'isAdmin' => $request->has('isAdmin') ? 1 : 0,
                 'isActive' => $request->has('isActive') ? 1 : 0,
+                'slug' => strtolower($request->name)
             ]);
 
             if ($user->isDirty()) {
@@ -92,6 +104,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'isAdmin' => $request->has('isAdmin') ? 1 : 0,
                 'isActive' => $request->has('isActive') ? 1 : 0,
+                'slug' => strtolower($request->name)
             ]);
 
             if ($user->isDirty()) {

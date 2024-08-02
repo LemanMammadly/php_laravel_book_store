@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ReviewMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,7 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminAuthMiddleware::class,
             'adminRegister' => \App\Http\Middleware\AdminRegisterMiddleware::class,
-            'userUpdate' =>  \App\Http\Middleware\UserUpdateMiddleware::class
+            'userUpdate' =>  \App\Http\Middleware\UserUpdateMiddleware::class,
+            'review'=>ReviewMiddleware::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
