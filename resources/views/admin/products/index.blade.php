@@ -3,7 +3,8 @@
 @section('content')
     @push('css')
         <style>
-            td {
+            td,
+            th {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis
@@ -12,7 +13,10 @@
     @endpush
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Tables</h1>
+            <div class="products-create d-flex align-items-center justify-content-between">
+                <h1 class="mt-4">Tables</h1>
+                <a href="{{route('admin.products.createView')}}" class="btn btn-primary">Create</a>
+            </div>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
                 <li class="breadcrumb-item active">Products</li>
@@ -43,6 +47,9 @@
                                 <th>Slug</th>
                                 <th>Create date</th>
                                 <th>Update date</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                                <th>Comments</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,12 +66,15 @@
                                     <td>{{ $product->price }}</td>
                                     <td>{{ $product->discountPercent }}</td>
                                     <td>{{ Str::substr($product->text, 0, 30) }}...</td>
-                                    <td>{{ Str::substr($product->description ,0 ,30)}}...</td>
-                                    <td>{{ $product->category_id }}</td>
-                                    <td>{{ $product->sub_categories_id }}</td>
+                                    <td>{{ Str::substr($product->description, 0, 30) }}...</td>
+                                    <td>{{ $product->GetCategoryName($product->id) ?? $product->GetCategoryBySubCategoryId($product->sub_categories_id) }}</td>
+                                    <td>{{ $product->getSubCategoryName($product->id) }}</td>
                                     <td>{{ $product->slug }}</td>
                                     <td>{{ $product->created_at }}</td>
                                     <td>{{ $product->updated_at }}</td>
+                                    <td><button style="border: none;background:transparent">✏️</button></td>
+                                    <td><button style="border: none;background:transparent">🗑️</button></td>
+                                    <td><button style="border: none;background:transparent">💬</button></td>
                                 </tr>
                             @endforeach
                         </tbody>

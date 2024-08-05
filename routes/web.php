@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\admin\LoginController;
 use App\Http\Controllers\admin\ProductsController;
 use App\Http\Controllers\admin\RegisterController;
+use App\Http\Controllers\admin\SubCategoryController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\front\AuthController;
 use App\Http\Controllers\front\ContactController;
@@ -45,4 +46,6 @@ Route::prefix('admin1')->group(function(){
     Route::post('/updateUserOnlyByAdmin/{slug}',[UserController::class,'updateUser'])->name('updateViewUserUpd');
     Route::resource('brands',AdminBrandController::class);
     Route::get('/products',[ProductsController::class,'index'])->name('admin.products');
+    Route::get('/createProducts',[ProductsController::class,'createView'])->name('admin.products.createView');
+    Route::get('/subCategories/{id}',[SubCategoryController::class,'GetSubCateories'])->name('admin.products.subCategories');
 });
